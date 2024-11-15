@@ -25,7 +25,7 @@ class Ghost {
 	 *
 	 * @var	 string
 	 */
-	protected $version = '1.5.0';
+	protected $version = '1.6.0';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -297,6 +297,19 @@ class Ghost {
 	 * @return void 						modifies in place
 	 */
 	private function populate_tags() {
+		$all_categories = get_categories();
+         
+		if ( ! empty( $all_categories ) ) {
+			foreach ( $all_categories as $category ) {
+				$this->garray['data']['tags'][] = array(
+					'id' => intval( $category->term_id ),
+					'name' => $category->name,
+					'slug' => $category->slug,
+					'description' => $category->description,
+				);
+			}
+		}
+
 		$all_tags = get_tags();
 
 		if ( ! empty( $all_tags ) ) {
@@ -341,7 +354,19 @@ class Ghost {
 				global $post;
 				$posts->the_post();
 
+				$cats = wp_get_post_categories( $post->ID );
+
+				if ( ! empty( $cats ) ) {
+					foreach ( $cats as $cat ) {
+						$_post_tags[] = array(
+							'tag_id' => intval( $cat ),
+							'post_id' => intval( $post->ID )
+						);
+					}
+				}
+
 				$tags = get_the_tags();
+
 				if ( ! empty( $tags ) ) {
 					foreach ( $tags as $tag ) {
 						$_post_tags[] = array(
@@ -437,28 +462,6 @@ class Ghost {
 	}
 
 	/**
-	 * Convert the WordPress user slug to the name that Ghost can use
-	 * @param string $wp_role The WordPress role slug
-	 * @return string The Ghost role name
-	 */
-	private function _get_ghost_user_role( $wp_role ) {
-		switch ( $wp_role ) :
-			case "administrator":
-				return "Administrator";
-				break;
-			case "editor":
-				return "Editor";
-				break;
-			case "author":
-				return "Author";
-				break;
-			default:
-				return "Contributor";
-				break;
-		endswitch;
-	}
-
-	/**
 	 * Populates users on the export object
 	 * @return void 						modifies in place
 	 */
@@ -474,16 +477,22 @@ class Ghost {
 
 			$user_meta = get_user_meta( $user->ID );
 
+			$user_id = $this->_safe_author_id( $user->ID );
+			$user_login = ( $user->user_login ) ? $user->user_login : 'author-' . $user_id;
+			$user_slug = ( $user->user_login ) ? $user->user_login : 'author-' . $user_id;
+			$user_email = ( $user->user_email ) ? $user->user_email : $user_login . '@example.com';
+			$user_name = ( $user->display_name ) ? $user->display_name : $user->user_login;
+			
 			$this->garray['data']['users'][] = array(
-				'id' => $this->_safe_author_id( $user->ID ),
-				'slug' => $user->user_login,
+				'id' => $user_id,
+				'slug' => $user_slug,
 				'bio' => substr( $user_meta['description'][0], 0, 199 ),
 				'website' => $this->_safe_url( $user->user_url ),
 				'created_at' => $this->_get_json_date( $user->user_registered ),
-				'email' => ($user->user_email) ? $user->user_email : $user->user_login . '@example.com',
-				'name' => ($user->display_name) ? $user->display_name : $user->user_login,
+				'email' => $user_email,
+				'name' => $user_name,
 				'profile_image' => get_avatar_url( $user->ID, ['size' => 512] ),
-				'roles' => [$this->_get_ghost_user_role( $user->roles[0] )]
+				'roles' => ['Contributor']
 			);
 		}
 

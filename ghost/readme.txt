@@ -3,8 +3,8 @@ Contributors: JohnONolan, ErisDS, javorszky, nathanjeffery, pauladamdavis
 Donate link: https://ghost.org/docs/concepts/contributing/#donations
 Tags: ghost, export, migrate, blogging, publishing
 Requires at least: 4.2.0
-Tested up to: 6.5
-Stable tag: 1.5.0
+Tested up to: 6.7
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ The Ghost Migrator plugin will export as much blog and publication data as it ca
 
 - Posts, pages, tags and authors are all automatically exported and recreated for Ghost
 - Tags will be migrated, but not categories. If needed you can [convert your categories to tags](https://wordpress.org/plugins/wpcat2tag-importer/) before exporting.
-- Ghost does not have built-in comments, but it does integrate with [many comment platforms](https://ghost.org/integrations/community/) if you want to migrate your comments there.
+- Ghost does not have built-in comments, but it does integrate with [many comment platforms](https://ghost.org/integrations/?tag=community) if you want to migrate your comments there.
 - No custom fields, meta, shortcodes, post types, taxonomies or binary files will be migrated. Just regular **posts**, **pages**, **tags** and **images**
 - Passwords are not migrated - after importing to Ghost, each user may perform a password reset to gain access to their Ghost account
 
@@ -60,6 +60,12 @@ Install it, then go to Tools -> Export to Ghost.
 1. The plugin has a single settings screen to export all your data
 
 == Changelog ==
+
+= 1.6.0 =
+
+* Include categories
+* Set all users to Contributor role once imported to Ghost
+* User info now has fallbacks
 
 = 1.5.0 =
 
